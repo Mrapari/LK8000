@@ -406,12 +406,17 @@ bool LKSurface::TransparentCopy(int xoriginDest, int yoriginDest, int wDest, int
 }
 
 // for each white pixel in the mask, do nothing (NOP), and for each black pixel, do a Copy.
-bool LKSurface::CopyWithMask(int nXDest, int nYDest, int nWidth, int nHeight, const LKSurface& hdcSrc, int nXSrc, int nYSrc, const LKBitmap& bmpMask, int xMask, int yMask) {
+bool LKSurface::CopyWithMask(int nXDest, int nYDest, int nWidth, int nHeight, const LKSurface& hdcSrc, int nXSrc, int nYSrc, const LKSurface& bmpMask, int xMask, int yMask) {
 #ifdef WIN32
     return ::MaskBlt(*this, nXDest, nYDest, nWidth, nHeight, hdcSrc, nXSrc, nYSrc, bmpMask, xMask, yMask, MAKEROP4(SRCAND,  0x00AA0029));
 #else
+    if(_pCanvas && hdcSrc.IsDefined() && bmpMask.IsDefined()) {
+        _pCanvas->CopyOr(nXDest, nYDest, nWidth, nHeight, bmpMask, nXSrc, nYSrc);
+        _pCanvas->CopyAnd(nXDest, nYDest, nWidth, nHeight, hdcSrc, nXSrc, nYSrc);
+        return true;
+    }
     return false;
-#endif
+ #endif
 }
 
 #ifdef UNDER_CE

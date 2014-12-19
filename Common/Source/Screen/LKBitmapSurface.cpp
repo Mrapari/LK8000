@@ -86,7 +86,9 @@ void LKMaskBitmapSurface::Create(const LKSurface& Surface, unsigned width, unsig
 
     _hBitmap = LKBitmap(::CreateBitmap(width, height, 1, 1, NULL));
     _oldBitmap = LKBitmap((HBITMAP)::SelectObject(_OutputDC, _hBitmap));
-#endif
+#else
+    _pCanvas = new VirtualCanvas(Surface, {width, height});
+#endif    
 }
 
 void LKMaskBitmapSurface::Resize(unsigned width, unsigned height) {
